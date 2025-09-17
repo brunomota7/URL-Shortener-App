@@ -36,11 +36,21 @@ export default function LoginPage() {
         username,
         password,
       });
-      Cookies.set("token", res.data.accessToken, { expires: 2 })
+      
+      const userRoles = res.data.roles;
+      const isAdmin = userRoles.includes("SCOPE_ADMIN");
+
+      Cookies.set("token", res.data.accessToken, { expires: 2 });
+
+      if (isAdmin) {
+        router.replace("/admin");
+      } else {
+        router.replace("/home");
+      }
+
       setUsername("");
       setPassword("");
-      router.replace("/home");
-    } catch (err: any) {
+    } catch (err) {
       if (err.response?.data?.message) {
         setErro(err.response.data.message);
       } else {
@@ -53,9 +63,7 @@ export default function LoginPage() {
     <div className="w-[100vw] h-[100vh] flex flex-col items-center justify-center bg-sky-950 p-4 relative">
       <section className="w-[600px] h-auto p-[10px] flex flex-col items-center justify-center bg-sky-800 rounded-[10px]">
         <header className="w-[550px] h-auto p-[14px] flex flex-col items-center justify-center gap-[8px] absolute top-40 bg-sky-600 rounded-[10px]">
-          <h2 className="text-[20px] font-[900]">
-            LOGIN
-          </h2>
+          <h2 className="text-[20px] font-[900]">LOGIN</h2>
         </header>
 
         <div className="w-full h-auto p-[14px] mt-10 flex flex-col gap-[10px]">
@@ -86,15 +94,10 @@ export default function LoginPage() {
             </div>
           )}
 
-          <Button
-            label={"Entrar"}
-            onClick={handleLogin}
-          />
+          <Button label={"Entrar"} onClick={handleLogin} />
 
           <div className="w-full h-[20px] pr-[14px] mt-[10px] flex items-center justify-center gap-[3px]">
-            <span className="text-[14px] font-medium">
-              Não tem uma conta?
-            </span>
+            <span className="text-[14px] font-medium">Não tem uma conta?</span>
             <Link
               href={"/auth/register"}
               className="text-[14px] text-sky-200 font-bold underline cursor-pointer"
